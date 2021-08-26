@@ -3,8 +3,8 @@ description: "#{repo}"
 builds:
 - platform: "debian"
   arch: "amd64"
-  asset_filename: "#{repo}_#{version}_debian_linux_amd64.tar.gz"
-  sha_filename: "#{repo}_#{version}_sha512-checksums.txt"
+  asset_filename: "sensu-plugins-rabbitmq_#{version}_debian_linux_amd64.tar.gz"
+  sha_filename: "sensu-plugins-rabbitmq_#{version}_sha512-checksums.txt"
   filter:
   -  "entity.system.os == 'linux'"
   -  "entity.system.arch == 'amd64'"
