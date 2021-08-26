@@ -157,7 +157,7 @@ class CheckRabbitMQMessages < Sensu::Plugin::Check::CLI
     now_str = Time.new.inspect
     # Fill queues_hash with current queue info from rabbitmq plugin
     rabbitmq.queues.each do |queue|
-      if queue['name'].include? include_prefix and not queue['name'].include? exclude_prefix and queue['name'] not in excluded_queues
+      if queue['name'].include? include_prefix and not queue['name'].include? exclude_prefix and not excluded_queues.include? queue['name']
         queues_hash[(queue['name']).to_s] = { 'last_decrease' => now_str, 'last_value' => queue['messages'] }
       end
     end
