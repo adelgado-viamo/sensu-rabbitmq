@@ -99,11 +99,11 @@ class CheckRabbitMQMessages < Sensu::Plugin::Check::CLI
          default: 50
 
   option :include_prefix,
-         description: 'Include monitor queue with this prefix',
-         default: ' '
+         description: 'Include queue with this prefix',
+         default: ''
 
   option :exclude_prefix,
-         description: 'Include monitor queue with this prefix',
+         description: 'Exclude queue with this prefix',
          default: ' '
 
   option :excluded_queues,
