@@ -1,0 +1,2 @@
+# sensu-rabbitmq
+Personal rabbitmq
