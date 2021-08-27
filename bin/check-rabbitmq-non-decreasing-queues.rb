@@ -215,7 +215,7 @@ class CheckRabbitMQMessages < Sensu::Plugin::Check::CLI
       end
       critical "Queues non decreasing #{generate_message(crit_queues)} for more than #{max_crit_minutes_limit} minutes" unless crit_queues.empty?
       warning "Queues non decreasing #{generate_message(warn_queues)} for more than #{max_warn_minutes_limit} minutes" unless warn_queues.empty?
-      ok "All Queues OK #{queues_hash.to_json} "
+      ok "All Queues OK"
     else
       File.open(filename,'w') do |f|
         f.write(queues_hash.to_json)
