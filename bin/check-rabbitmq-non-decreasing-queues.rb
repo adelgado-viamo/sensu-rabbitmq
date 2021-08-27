@@ -99,23 +99,29 @@ class CheckRabbitMQMessages < Sensu::Plugin::Check::CLI
          default: 50
 
   option :include_prefix,
-   short: '-ipr INCLUDE_PREFIX',
-   long: '--include-prefix INCLUDE_PREFIX',
+         short: '-ipr INCLUDE_PREFIX',
+         long: '--include-prefix INCLUDE_PREFIX',
          description: 'Include queue with this prefix',
          default: ''
 
   option :exclude_prefix,
-   short: '-epr EXCLUDE_PREFIX',
-   long: '--exclude-prefix EXCLUDE_PREFIX',
+         short: '-epr EXCLUDE_PREFIX',
+         long: '--exclude-prefix EXCLUDE_PREFIX',
          description: 'Exclude queue with this prefix',
          default: ' '
 
   option :excluded_queues,
-   short: '-ex EXCLUDED_QUEUES',
-   long: '--excluded_queues EXCLUDED_QUEUES',
+         short: '-ex EXCLUDED_QUEUES',
+         long: '--excluded_queues EXCLUDED_QUEUES',
          description: 'Comma separated list of queues to exclude when using queue level monitoring',
          proc: proc { |q| q.split(',') },
          default: []
+
+  option :filename,
+         short: '-f FILENAME',
+         long: '--filename FILENAME',
+         description: 'Filename to store historical queue values',
+         default: 'check-rabbitmq.log'
 
   def generate_message(status_hash)
     message = []
@@ -152,7 +158,8 @@ class CheckRabbitMQMessages < Sensu::Plugin::Check::CLI
 
   def run
     rabbitmq = acquire_rabbitmq_info
-    filename = '/tmp/rabbitmq_queues_registry.log'
+    filename_param = config[:filename].to_s
+    filename = "/tmp/#{filename_param}.log"
     max_crit_minutes_limit = config[:max_crit_non_decreasing_minutes].to_i
     max_warn_minutes_limit = config[:max_warn_non_decreasing_minutes].to_i
     max_accepted_value = config[:accepted_max_value].to_i
@@ -166,19 +173,10 @@ class CheckRabbitMQMessages < Sensu::Plugin::Check::CLI
     now_str = Time.new.inspect
     # Fill queues_hash with current queue info from rabbitmq plugin
     rabbitmq.queues.each_with_index do |queue, i|
-      if i == 1 then
-  puts "Paramter=#{include_prefix}|"
-  puts "Paramter=#{exclude_prefix}|"
-        puts queue['name'].to_s.include? include_prefix ? "true" : "false"
-  puts queue['name'].to_s.include? exclude_prefix ? "true" : "false"
-  puts excluded_queues.include? queue['name'].to_s ? "true" : "false"
-        puts ( include_prefix == '' or queue['name'].to_s.include? include_prefix ) ? "true" : "false"
-      end
       if ( include_prefix == '' or queue['name'].to_s.include? include_prefix ) and not queue['name'].to_s.include? exclude_prefix and not excluded_queues.include? queue['name'].to_s
         queues_hash[(queue['name']).to_s] = { 'last_decrease' => now_str, 'last_value' => queue['messages'] }
       end
     end
-    puts "#{queues_hash.to_json}"
     # If file exists compare time and messages count
     if File.exist?(filename)
       file = File.read(filename)
